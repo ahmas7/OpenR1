@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ORION-R1 | SUPERHUMAN AI</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000000;
+      color: #FFFFFF;
+      font-family: 'Courier New', monospace;
+      overflow-x: hidden;
+    }
+
+    /* Matrix Digital Rain Canvas Background */
+    #matrix-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    /* CRT Scanline Effect */
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Matrix Color Palette */
+    .matrix-red { color: #FF003C; }
+    .matrix-red-bg { background: #FF003C; }
+    .matrix-dark-red { background: #0D0208; }
+    .matrix-neon-pink { color: #FF2D55; }
+    .matrix-red-glow {
+      color: #FF003C;
+      text-shadow: 0 0 10px #FF003C, 0 0 20px #FF003C, 0 0 30px #FF003C;
+    }
+
+    /* Glass Panel with Red Theme */
+    .glass {
+      background: rgba(20, 0, 5, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 0, 60, 0.3);
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(255, 0, 60, 0.1), inset 0 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .glass-header {
+      background: rgba(20, 0, 5, 0.95);
+      border-bottom: 1px solid rgba(255, 0, 60, 0.5);
+    }
+
+    /* Gradient Text - Matrix Red */
+    .gradient-text {
+      background: linear-gradient(90deg, #FF003C, #FF2D55, #FF6B7A);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(255, 0, 60, 0.5);
+    }
+
+    /* Status Dots with Red Glow */
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .status-online {
+      background: #FF003C;
+      box-shadow: 0 0 10px #FF003C, 0 0 20px #FF003C;
+      animation: pulse 2s infinite;
+    }
+    .status-busy {
+      background: #FF2D55;
+      box-shadow: 0 0 10px #FF2D55;
+      animation: pulse 1s infinite;
+    }
+    .status-error {
+      background: #8B0000;
+      box-shadow: 0 0 10px #8B0000;
+    }
+    .status-offline {
+      background: #333;
+      box-shadow: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
+
+    .glitch-text {
+      animation: glitch 0.3s infinite;
+      display: inline-block;
+    }
+
+    @keyframes scan {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    .scan-line {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 0, 60, 0.3);
+      animation: scan 3s linear infinite;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0D0208; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #FF003C, #FF2D55);
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #FF2D55, #FF6B7A);
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      border: 4px solid rgba(255, 0, 60, 0.2);
+      border-top-color: #FF003C;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 0 20px rgba(255, 0, 60, 0.3);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Button Styles */
+    .matrix-btn {
+      background: linear-gradient(135deg, rgba(255, 0, 60, 0.2), rgba(255, 45, 85, 0.1));
+      border: 1px solid rgba(255, 0, 60, 0.4);
+      color: #FF003C;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .matrix-btn:hover {
+      background: rgba(255, 0, 60, 0.3);
+      box-shadow: 0 0 20px rgba(255, 0, 60, 0.4);
+      border-color: #FF003C;
+    }
+    .matrix-btn:active {
+      transform: scale(0.98);
+    }
+    .matrix-btn.active {
+      background: rgba(255, 0, 60, 0.4);
+      box-shadow: 0 0 30px rgba(255, 0, 60, 0.6);
+    }
+
+    /* Input Styles */
+    .matrix-input {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 0, 60, 0.3);
+      color: #FF003C;
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    .matrix-input:focus {
+      outline: none;
+      border-color: #FF003C;
+      box-shadow: 0 0 15px rgba(255, 0, 60, 0.4);
+    }
+    .matrix-input::placeholder {
+      color: rgba(255, 0, 60, 0.4);
+    }
+
+    /* Panel Header */
+    .panel-header {
+      background: linear-gradient(90deg, rgba(255, 0, 60, 0.2), transparent);
+      border-bottom: 1px solid rgba(255, 0, 60, 0.2);
+      padding: 12px 16px;
+      margin: -8px -16px 16px -16px;
+    }
+
+    /* WebSocket Connection Indicator */
+    .ws-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .ws-connected {
+      background: rgba(0, 255, 100, 0.1);
+      border: 1px solid rgba(0, 255, 100, 0.3);
+      color: #00FF64;
+    }
+    .ws-disconnected {
+      background: rgba(255, 0, 60, 0.1);
+      border: 1px solid rgba(255, 0, 60, 0.3);
+      color: #FF003C;
+    }
+    .ws-connecting {
+      background: rgba(255, 165, 0, 0.1);
+      border: 1px solid rgba(255, 165, 0, 0.3);
+      color: #FFA500;
+    }
+
+    /* Trust Level Badge */
+    .trust-badge {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .trust-stranger { background: rgba(139, 0, 0, 0.4); color: #FF6B6B; border: 1px solid #8B0000; }
+    .trust-acquaintance { background: rgba(255, 140, 0, 0.2); color: #FFA500; border: 1px solid #FF8C00; }
+    .trust-associate { background: rgba(255, 215, 0, 0.2); color: #FFD700; border: 1px solid #FFD700; }
+    .trust-partner { background: rgba(0, 200, 100, 0.2); color: #00C864; border: 1px solid #00C864; }
+    .trust-operator { background: rgba(0, 255, 100, 0.2); color: #00FF64; border: 1px solid #00FF64; }
+
+    /* Agent Status */
+    .agent-card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 0, 60, 0.2);
+      border-radius: 6px;
+      padding: 10px;
+      transition: all 0.3s ease;
+    }
+    .agent-card:hover {
+      border-color: #FF003C;
+      box-shadow: 0 0 15px rgba(255, 0, 60, 0.3);
+    }
+    .agent-active {
+      border-color: #00FF64;
+      box-shadow: 0 0 15px rgba(0, 255, 100, 0.3);
+    }
+
+    /* Progress Bar */
+    .progress-bar {
+      height: 6px;
+      background: rgba(255, 0, 60, 0.2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF003C, #FF2D55);
+      transition: width 0.5s ease;
+      box-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
+    }
+
+    /* Terminal Text Effect */
+    .terminal-text {
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 0 5px rgba(255, 0, 60, 0.5);
+    }
+
+    /* Notification Toast */
+    .toast {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: rgba(20, 0, 5, 0.95);
+      border: 1px solid rgba(255, 0, 60, 0.5);
+      border-radius: 8px;
+      padding: 16px 20px;
+      box-shadow: 0 0 30px rgba(255, 0, 60, 0.4);
+      z-index: 2000;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid rgba(255, 0, 60, 0.3);
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 0, 60, 0.5);
+      padding: 10px 20px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      border-bottom: 2px solid transparent;
+    }
+    .tab-btn:hover {
+      color: #FF003C;
+      background: rgba(255, 0, 60, 0.1);
+    }
+    .tab-btn.active {
+      color: #FF003C;
+      border-bottom-color: #FF003C;
+      background: rgba(255, 0, 60, 0.15);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix-canvas"></canvas>
+  <div class="scanlines"></div>
+  <div id="root"></div>
+
+  <script>
+    // Matrix Digital Rain Effect
+    (function() {
+      const canvas = document.getElementById('matrix-canvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+      const charArray = chars.split('');
+      const fontSize = 14;
+      const columns = canvas.width / fontSize;
+      const drops = [];
+
+      for (let i = 0; i < columns; i++) {
+        drops[i] = Math.random() * -100;
+      }
+
+      function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#FF003C';
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+          const char = charArray[Math.floor(Math.random() * charArray.length)];
+          ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = Math.random() * -20;
+          }
+          drops[i]++;
+        }
+      }
+
+      setInterval(draw, 50);
+
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    })();
+  </script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback, useRef } = React;
+
+    // Toast Notification Component
+    function Toast({ message, type, onClose }) {
+      useEffect(() => {
+        const timer = setTimeout(onClose, 4000);
+        return () => clearTimeout(timer);
+      }, [onClose]);
+
+      const colors = {
+        info: '#00D9FF',
+        success: '#00FFA3',
+        error: '#FF003C',
+        warning: '#FFA500'
+      };
+
+      return (
+        <div className="toast" style={{borderColor: colors[type]}}>
+          <div style={{color: colors[type], fontWeight: 'bold', marginBottom: '4px'}}>
+            {type.toUpperCase()}
+          </div>
+          <div style={{fontSize: '13px'}}>{message}</div>
+        </div>
+      );
+    }
+
+    function StatCard({ icon, label, value, color, subValue }) {
+      return (
+        <div className="glass p-4 flex items-center gap-4" style={{position: 'relative', overflow: 'hidden'}}>
+          <div className="scan-line" style={{height: '100%', width: '2px', background: `linear-gradient(180deg, transparent, ${color}, transparent)`}}></div>
+          <div className="text-2xl" style={{color}}>{icon}</div>
+          <div>
+            <div className="text-2xl font-bold terminal-text" style={{color}}>{value}</div>
+            <div className="text-xs opacity-60">{label}</div>
+            {subValue && <div className="text-xs" style={{color: 'rgba(255,45,85,0.8)'}}>{subValue}</div>}
+          </div>
+        </div>
+      );
+    }
+
+    function ActivityFeed({ logs }) {
+      return (
+        <div className="glass" style={{height: '280px', display: 'flex', flexDirection: 'column'}}>
+          <div className="panel-header">
+            <h3 className="font-bold matrix-red terminal-text">[ACTIVITY FEED]</h3>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 font-mono text-xs">
+            {logs.slice(-30).reverse().map((l, i) => (
+              <div key={i} className="flex gap-3 mb-2" style={{opacity: Math.max(0.4, 1 - (logs.length - i) * 0.03)}}>
+                <span className="opacity-40" style={{color: '#FF6B7A'}}>[{l.time}]</span>
+                <span className={l.type === 'error' ? 'matrix-red' : 'matrix-neon-pink'}>
+                  {l.type === 'error' ? 'ERR:' : '>>'} {l.event}
+                </span>
+              </div>
+            ))}
+            {!logs.length && <div className="opacity-40 text-center py-8">NO ACTIVITY</div>}
+          </div>
+        </div>
+      );
+    }
+
+    function TrustIndicator({ level }) {
+      const levels = {
+        stranger: 'STRANGER',
+        acquaintance: 'ACQUAINTANCE',
+        associate: 'ASSOCIATE',
+        partner: 'PARTNER',
+        operator: 'OPERATOR'
+      };
+      const classes = {
+        stranger: 'trust-stranger',
+        acquaintance: 'trust-acquaintance',
+        associate: 'trust-associate',
+        partner: 'trust-partner',
+        operator: 'trust-operator'
+      };
+
+      return (
+        <div className={`trust-badge ${classes[level] || 'trust-stranger'}`}>
+          {levels[level] || 'STRANGER'}
+        </div>
+      );
+    }
+
+    function AgentCard({ agent }) {
+      return (
+        <div className={`agent-card ${agent.active ? 'agent-active' : ''}`}>
+          <div className="flex justify-between items-center mb-2">
+            <span className="font-bold terminal-text" style={{color: agent.active ? '#00FF64' : '#FF6B7A'}}>
+              {agent.icon || '🤖'} {agent.name}
+            </span>
+            <span className={`status-dot ${agent.active ? 'status-online' : 'status-offline'}`}></span>
+          </div>
+          <div className="text-xs opacity-60 mb-2">{agent.role}</div>
+          {agent.currentTask && (
+            <div className="text-xs" style={{color: '#FF2D55'}}>
+              Task: {agent.currentTask}
+            </div>
+          )}
+          {agent.progress !== undefined && (
+            <div className="progress-bar mt-2">
+              <div className="progress-fill" style={{width: `${agent.progress}%`}}></div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function ProviderList({ providers }) {
+      return (
+        <div className="glass">
+          <div className="panel-header">
+            <h3 className="font-bold matrix-red terminal-text">[PROVIDERS]</h3>
+          </div>
+          <div className="p-4 space-y-2">
+            {(providers?.providers || []).map((p, i) => (
+              <div key={i} className="flex justify-between items-center p-3 rounded" style={{background: 'rgba(0,0,0,0.4)'}}>
+                <span className="terminal-text" style={{color: '#FF6B7A'}}>{p.id}</span>
+                <div className="flex items-center gap-2">
+                  <span className={`status-dot ${p.healthy ? 'status-online' : 'status-error'}`}></span>
+                  <span className={p.healthy ? 'matrix-neon-pink' : 'matrix-red'}>
+                    {p.healthy ? 'ONLINE' : 'OFFLINE'}
+                  </span>
+                </div>
+              </div>
+            ))}
+            {!providers?.providers?.length && <div className="opacity-50 text-center py-4">NO PROVIDERS</div>}
+          </div>
+        </div>
+      );
+    }
+
+    function ToolGrid({ tools }) {
+      const toolIcons = {
+        shell: '💻', filesystem: '📁', browser: '🌐',
+        code_exec: '⚡', app_open: '🚀', email: '📧',
+        calendar: '📅', notification: '🔔'
+      };
+
+      return (
+        <div className="glass">
+          <div className="panel-header">
+            <h3 className="font-bold matrix-red terminal-text">[TOOLS]</h3>
+          </div>
+          <div className="grid grid-cols-3 gap-2 p-4">
+            {tools.map((t, i) => (
+              <div key={i} className="p-3 rounded text-center text-xs terminal-text"
+                   style={{background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,0,60,0.2)', color: '#FF2D55'}}>
+                <div className="text-lg mb-1">{toolIcons[t] || '🔧'}</div>
+                <div>{t}</div>
+              </div>
+            ))}
+            {!tools.length && <div className="opacity-50 text-center py-4 col-span-3">NO TOOLS</div>}
+          </div>
+        </div>
+      );
+    }
+
+    function SessionTable({ sessions }) {
+      return (
+        <div className="glass">
+          <div className="panel-header">
+            <h3 className="font-bold matrix-red terminal-text">[SESSIONS]</h3>
+          </div>
+          <div className="overflow-x-auto p-4">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="opacity-50 border-b" style={{borderColor: 'rgba(255,0,60,0.2)'}}>
+                  <th className="text-left p-2 terminal-text">ID</th>
+                  <th className="text-left p-2 terminal-text">STATUS</th>
+                  <th className="text-left p-2 terminal-text">AGENT</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sessions.map((s, i) => (
+                  <tr key={i} className="border-b" style={{borderColor: 'rgba(255,0,60,0.1)'}}>
+                    <td className="p-2 terminal-text" style={{color: '#FF6B7A'}}>{s.session_id?.substring(0, 8)}...</td>
+                    <td className="p-2">
+                      <span className="px-2 py-1 rounded text-xs"
+                            style={{background: 'rgba(0,255,100,0.1)', color: '#00FF64', border: '1px solid rgba(0,255,100,0.3)'}}>
+                        {s.status}
+                      </span>
+                    </td>
+                    <td className="p-2 opacity-60">{s.agent || 'R1'}</td>
+                  </tr>
+                ))}
+                {!sessions.length && (
+                  <tr><td colSpan="3" className="opacity-50 text-center py-4">NO ACTIVE SESSIONS</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    function ChatConsole({ addLog, voice, refresh, wsConnected }) {
+      const [input, setInput] = useState('');
+      const [messages, setMessages] = useState([{ role: 'system', text: 'R1 SUPERHUMAN AI ONLINE. AWAITING COMMANDS.' }]);
+      const [loading, setLoading] = useState(false);
+      const [autoSpeak, setAutoSpeak] = useState(false);
+      const [speechMode, setSpeechMode] = useState('browser');
+      const messagesEndRef = useRef(null);
+
+      const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      };
+
+      useEffect(() => {
+        scrollToBottom();
+      }, [messages]);
+
+      const speakText = async (text) => {
+        if (speechMode === 'browser' && 'speechSynthesis' in window) {
+          try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            window.speechSynthesis.speak(utterance);
+            addLog('TTS: Browser voice active', 'info');
+            return;
+          } catch (e) {
+            addLog(`Browser voice failed: ${e.message}`, 'error');
+          }
+        }
+
+        try {
+          const r = await fetch('/voice/speak', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text })
+          });
+          const d = await r.json();
+          if (d?.success) {
+            addLog('TTS: Server voice active', 'info');
+            refresh();
+          }
+        } catch (e) {
+          addLog(`Voice speak failed: ${e.message}`, 'error');
+        }
+      };
+
+      const stopSpeaking = async () => {
+        if ('speechSynthesis' in window) {
+          try { window.speechSynthesis.cancel(); } catch {}
+        }
+        try {
+          await fetch('/voice/stop', { method: 'POST' });
+          addLog('TTS: Speech stopped', 'info');
+          refresh();
+        } catch (e) {
+          addLog(`Voice stop failed: ${e.message}`, 'error');
+        }
+      };
+
+      const send = async (text) => {
+        const msg = text?.trim();
+        if (!msg) return;
+        setMessages(m => [...m, { role: 'user', text: msg }]);
+        setLoading(true);
+        addLog(`CMD: ${msg.substring(0, 40)}${msg.length > 40 ? '...' : ''}`, 'info');
+
+        try {
+          const r = await fetch('/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+          });
+          const d = await r.json();
+          const reply = d.response || 'NO RESPONSE';
+          setMessages(m => [...m, { role: 'assistant', text: reply }]);
+          if (autoSpeak && reply) {
+            await speakText(reply);
+          }
+        } catch (e) {
+          setMessages(m => [...m, { role: 'system', text: `ERROR: ${e.message}` }]);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      return (
+        <div className="glass">
+          <div className="panel-header flex justify-between items-center">
+            <h3 className="font-bold matrix-red terminal-text">[NEURAL CONSOLE]</h3>
+            <div className="flex items-center gap-2 text-xs">
+              <span className={`ws-indicator ${wsConnected ? 'ws-connected' : 'ws-disconnected'}`}>
+                <span className={`status-dot ${wsConnected ? 'status-online' : 'status-error'}`}></span>
+                {wsConnected ? 'NEURAL LINK ACTIVE' : 'NEURAL LINK OFFLINE'}
+              </span>
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-3 gap-2">
+              <button
+                type="button"
+                onClick={() => setAutoSpeak(v => !v)}
+                className={`matrix-btn text-xs ${autoSpeak ? 'active' : ''}`}
+              >
+                {autoSpeak ? 'AUTO-VOICE: ON' : 'AUTO-VOICE: OFF'}
+              </button>
+              <button
+                type="button"
+                onClick={stopSpeaking}
+                className="matrix-btn text-xs"
+              >
+                STOP VOICE
+              </button>
+              <button
+                type="button"
+                onClick={() => setSpeechMode(m => m === 'browser' ? 'server' : 'browser')}
+                className={`matrix-btn text-xs ${speechMode === 'browser' ? 'active' : ''}`}
+              >
+                {speechMode === 'browser' ? 'BROWSER TTS' : 'SERVER TTS'}
+              </button>
+            </div>
+            <div className="h-48 overflow-y-auto mb-3 space-y-2 text-xs terminal-text" style={{background: 'rgba(0,0,0,0.4)', padding: '12px', borderRadius: '4px', border: '1px solid rgba(255,0,60,0.2)'}}>
+              {messages.map((m, i) => (
+                <div key={i} className={m.role === 'user' ? 'text-right' : 'text-left'}>
+                  <span className={`inline-block p-2 rounded max-w-full break-words ${
+                    m.role === 'user'
+                      ? 'matrix-red-bg'
+                      : m.role === 'system'
+                      ? 'matrix-red'
+                      : 'matrix-neon-pink'
+                  }`} style={{
+                    background: m.role === 'user'
+                      ? 'rgba(255,0,60,0.3)'
+                      : m.role === 'system'
+                      ? 'rgba(255,0,60,0.1)'
+                      : 'rgba(255,45,85,0.1)',
+                    border: m.role === 'user'
+                      ? '1px solid rgba(255,0,60,0.5)'
+                      : '1px solid rgba(255,45,85,0.3)'
+                  }}>
+                    {m.text}
+                  </span>
+                </div>
+              ))}
+              {loading && <div className="matrix-neon-pink opacity-70">PROCESSING...</div>}
+              <div ref={messagesEndRef} />
+            </div>
+            <form onSubmit={(e) => { e.preventDefault(); send(input); setInput(''); }} className="flex gap-2">
+              <input
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                className="matrix-input flex-1"
+                placeholder="Enter command..."
+              />
+              <button type="submit" className="matrix-btn" style={{background: 'linear-gradient(135deg, #FF003C, #FF2D55)', color: '#000'}}>
+                EXECUTE
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // Additional components would continue here...
+    // Due to length, I'll create a complete file in the next write
+
+    function Dashboard() {
+      const [health, setHealth] = useState(null);
+      const [providers, setProviders] = useState(null);
+      const [tools, setTools] = useState([]);
+      const [sessions, setSessions] = useState([]);
+      const [voice, setVoice] = useState(null);
+      const [jobs, setJobs] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [logs, setLogs] = useState([]);
+      const [metrics, setMetrics] = useState({ requests: 0, errors: 0 });
+      const [wsConnected, setWsConnected] = useState(false);
+      const [toasts, setToasts] = useState([]);
+      const wsRef = useRef(null);
+
+      // WebSocket Connection
+      useEffect(() => {
+        const connectWebSocket = () => {
+          try {
+            wsRef.current = new WebSocket(`ws://localhost:18789/ws`);
+
+            wsRef.current.onopen = () => {
+              setWsConnected(true);
+              addLog('WebSocket connected - Real-time updates active', 'success');
+              addToast('Neural Link Established', 'success');
+            };
+
+            wsRef.current.onmessage = (event) => {
+              try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'presence_update' || data.type === 'session_update') {
+                  refresh();
+                }
+                if (data.message) {
+                  addLog(`WS: ${data.message}`, 'info');
+                }
+              } catch (e) {
+                addLog(`WS Parse Error: ${e.message}`, 'error');
+              }
+            };
+
+            wsRef.current.onclose = () => {
+              setWsConnected(false);
+              addLog('WebSocket disconnected - Reconnecting...', 'warning');
+              setTimeout(connectWebSocket, 3000);
+            };
+
+            wsRef.current.onerror = (error) => {
+              setWsConnected(false);
+              addLog('WebSocket error', 'error');
+            };
+          } catch (e) {
+            setWsConnected(false);
+            addLog(`WS Connection failed: ${e.message}`, 'error');
+          }
+        };
+
+        connectWebSocket();
+
+        return () => {
+          if (wsRef.current) {
+            wsRef.current.close();
+          }
+        };
+      }, []);
+
+      const addToast = (message, type = 'info') => {
+        const id = Date.now();
+        setToasts(t => [...t, { id, message, type }]);
+      };
+
+      const removeToast = (id) => {
+        setToasts(t => t.filter(toast => toast.id !== id));
+      };
+
+      const addLog = (event, type) => {
+        setLogs(l => [...l.slice(-99), {
+          time: new Date().toLocaleTimeString(),
+          event,
+          type
+        }]);
+      };
+
+      const refresh = useCallback(async () => {
+        try {
+          const [h, p, t, s, vs, jb] = await Promise.all([
+            fetch('/health').then(r => r.ok ? r.json() : null),
+            fetch('/providers').then(r => r.ok ? r.json() : null),
+            fetch('/tools').then(r => r.ok ? r.json() : null),
+            fetch('/sessions').then(r => r.ok ? r.json() : null),
+            fetch('/voice/status').then(r => r.ok ? r.json() : null),
+            fetch('/jobs').then(r => r.ok ? r.json() : null)
+          ]);
+
+          setHealth(h);
+          setProviders(p);
+          setTools(t?.tools || []);
+          setSessions(s?.sessions || []);
+          setVoice(vs);
+          setJobs(jb?.jobs || []);
+          setLoading(false);
+          setMetrics(m => ({ ...m, requests: m.requests + 6 }));
+        } catch (e) {
+          setMetrics(m => ({ ...m, errors: m.errors + 1 }));
+          setLoading(false);
+        }
+      }, []);
+
+      useEffect(() => {
+        refresh();
+        const i = setInterval(refresh, 3000);
+        return () => clearInterval(i);
+      }, [refresh]);
+
+      if (loading) {
+        return (
+          <div className="min-h-screen flex items-center justify-center" style={{background: '#000'}}>
+            <div className="text-center">
+              <div className="loading-spinner mx-auto mb-4"></div>
+              <div className="gradient-text text-xl font-bold terminal-text glitch-text">INITIALIZING SUPERHUMAN AI...</div>
+              <div className="matrix-red text-sm mt-2">ESTABLISHING NEURAL CONNECTION</div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen" style={{position: 'relative'}}>
+          {/* Toast Notifications */}
+          {toasts.map(toast => (
+            <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
+          ))}
+
+          {/* Header */}
+          <header className="glass-header sticky top-0 z-50">
+            <div className="max-w-[1600px] mx-auto px-4 py-3 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded"
+                     style={{
+                       background: 'linear-gradient(135deg, #FF003C, #FF2D55)',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       boxShadow: '0 0 30px rgba(255,0,60,0.5)'
+                     }}>
+                  <span className="text-black font-bold text-xl terminal-text">R1</span>
+                </div>
+                <div>
+                  <h1 className="font-bold text-xl gradient-text terminal-text glitch-text">ORION-R1 SUPERHUMAN AI</h1>
+                  <p className="text-xs matrix-red">AUTONOMOUS INTELLIGENCE SYSTEM</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className={`ws-indicator ${wsConnected ? 'ws-connected' : 'ws-disconnected'}`}>
+                  <span className={`status-dot ${wsConnected ? 'status-online' : 'status-error'}`}></span>
+                  {wsConnected ? 'NEURAL LINK ACTIVE' : 'OFFLINE'}
+                </span>
+                <span className="status-dot status-online"></span>
+                <span className="matrix-neon-pink text-sm terminal-text">SYSTEM ONLINE</span>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="max-w-[1600px] mx-auto px-4 py-6 space-y-6">
+            {/* Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              <StatCard icon="🧠" label="Provider" value={providers?.active_provider || '-'} color="#FF003C" />
+              <StatCard icon="🛠️" label="Tools" value={tools.length} color="#FF2D55" />
+              <StatCard icon="💬" label="Sessions" value={sessions.length} color="#FF6B7A" />
+              <StatCard icon="📊" label="Requests" value={metrics.requests} color="#00FF64" />
+              <StatCard icon="⚠️" label="Errors" value={metrics.errors} color="#FF003C" />
+              <StatCard icon="⚡" label="Status" value={health?.status || 'N/A'} color="#FF2D55" />
+            </div>
+
+            {/* Main Grid */}
+            <div className="grid lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <ChatConsole addLog={addLog} voice={voice} refresh={refresh} wsConnected={wsConnected} />
+                <SessionTable sessions={sessions} />
+              </div>
+              <div className="space-y-6">
+                <ActivityFeed logs={logs} />
+                <ProviderList providers={providers} />
+              </div>
+            </div>
+
+            {/* Tools Grid */}
+            <div>
+              <ToolGrid tools={tools} />
+            </div>
+
+            {/* Footer */}
+            <footer className="glass p-4 text-center">
+              <p className="text-xs matrix-red terminal-text">
+                ORION-R1 SUPERHUMAN AI v2.0 | POWERED BY MATRIX NEURAL INTERFACE
+              </p>
+            </footer>
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<Dashboard />);
+  </script>
+</body>
+</html>

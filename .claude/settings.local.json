@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"Remove-Item -Path 'E:\\\\old apps\\\\MYAI\\\\R1\\\\New folder \\(2\\)' -Recurse -Force\")",
+      "Bash(del /f /q \"E:\\\\old apps\\\\MYAI\\\\R1\\\\nul\")",
+      "Bash(python -c \"import os; os.remove\\('nul'\\)\")",
+      "Bash(python:*)",
+      "Bash(ls -la *.py)",
+      "Bash(awk '{print $NF}')",
+      "Bash(ls -d R1/*/)",
+      "Bash(.venv/Scripts/python:*)"
+    ]
+  }
+}

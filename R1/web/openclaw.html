@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw - Personal AI Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .chat-bubble {
+            max-width: 80%;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .voice-wave {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 30px;
+        }
+        .voice-wave span {
+            width: 4px;
+            background: #667eea;
+            border-radius: 2px;
+            animation: wave 1s ease-in-out infinite;
+        }
+        .voice-wave span:nth-child(1) { animation-delay: 0s; height: 20%; }
+        .voice-wave span:nth-child(2) { animation-delay: 0.1s; height: 40%; }
+        .voice-wave span:nth-child(3) { animation-delay: 0.2s; height: 60%; }
+        .voice-wave span:nth-child(4) { animation-delay: 0.3s; height: 40%; }
+        .voice-wave span:nth-child(5) { animation-delay: 0.4s; height: 20%; }
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <div class="inline-flex items-center gap-3 mb-4">
+                <span class="text-5xl">🦞</span>
+                <h1 class="text-4xl font-bold">OpenClaw</h1>
+            </div>
+            <p class="text-white/80 text-lg">Your personal AI assistant that actually does things</p>
+            <div class="flex justify-center gap-4 mt-4">
+                <div id="connection-status" class="flex items-center gap-2 glass px-4 py-2 rounded-full text-sm">
+                    <span class="w-2 h-2 rounded-full bg-yellow-400 pulse-dot"></span>
+                    <span>Connecting...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Interface -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Sidebar -->
+            <div class="glass rounded-2xl p-6 space-y-6">
+                <!-- Voice Control -->
+                <div>
+                    <h3 class="font-semibold mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                        </svg>
+                        Voice
+                    </h3>
+                    <button id="voice-btn" class="w-full bg-white/20 hover:bg-white/30 transition rounded-xl p-4 flex items-center justify-center gap-2 font-medium">
+                        <span>🎤</span>
+                        <span>Start Voice Mode</span>
+                    </button>
+                    <div id="voice-status" class="mt-2 text-sm text-white/60 text-center hidden">
+                        <div class="voice-wave justify-center">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <p>Listening...</p>
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div>
+                    <h3 class="font-semibold mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Skills
+                    </h3>
+                    <div id="skills-list" class="space-y-2 text-sm">
+                        <div class="flex items-center gap-2 text-white/60">
+                            <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div>
+                    <h3 class="font-semibold mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button onclick="quickAction('briefing')" class="w-full bg-white/10 hover:bg-white/20 transition rounded-lg p-3 text-left text-sm flex items-center gap-2">
+                            📅 Morning Briefing
+                        </button>
+                        <button onclick="quickAction('reminder')" class="w-full bg-white/10 hover:bg-white/20 transition rounded-lg p-3 text-left text-sm flex items-center gap-2">
+                            ⏰ Add Reminder
+                        </button>
+                        <button onclick="quickAction('greet')" class="w-full bg-white/10 hover:bg-white/20 transition rounded-lg p-3 text-left text-sm flex items-center gap-2">
+                            👋 Greet
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Persona Settings -->
+                <div>
+                    <h3 class="font-semibold mb-3">Assistant Settings</h3>
+                    <div class="space-y-3 text-sm">
+                        <div>
+                            <label class="text-white/60">Name</label>
+                            <input type="text" id="assistant-name" placeholder="R1" class="w-full bg-white/10 rounded-lg px-3 py-2 mt-1 text-white placeholder-white/40 border border-white/20 focus:border-white/40 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-white/60">Your Name</label>
+                            <input type="text" id="user-name" placeholder="Your name" class="w-full bg-white/10 rounded-lg px-3 py-2 mt-1 text-white placeholder-white/40 border border-white/20 focus:border-white/40 outline-none">
+                        </div>
+                        <button onclick="updatePersona()" class="w-full bg-white/20 hover:bg-white/30 transition rounded-lg py-2 font-medium">Save</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="lg:col-span-2 glass rounded-2xl p-6 flex flex-col h-[600px]">
+                <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/20">
+                    <h2 class="font-semibold text-lg">Chat</h2>
+                    <button onclick="clearChat()" class="text-sm text-white/60 hover:text-white transition">Clear</button>
+                </div>
+
+                <!-- Messages -->
+                <div id="chat-messages" class="flex-1 overflow-y-auto space-y-4 mb-4">
+                    <div class="chat-bubble bg-white/10 rounded-2xl rounded-tl-none p-4">
+                        <p>👋 Hi! I'm your personal assistant. I can help you with:</p>
+                        <ul class="mt-2 space-y-1 text-white/80 text-sm">
+                            <li>• Answering questions</li>
+                            <li>• Managing calendar & tasks</li>
+                            <li>• Sending emails</li>
+                            <li>• Running commands</li>
+                            <li>• And much more!</li>
+                        </ul>
+                        <p class="mt-2 text-sm text-white/60">Try saying "what can you do?" or "add a reminder for tomorrow"</p>
+                    </div>
+                </div>
+
+                <!-- Input -->
+                <div class="flex gap-2">
+                    <input type="text" id="chat-input" placeholder="Type your message..." class="flex-1 bg-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 border border-white/20 focus:border-white/40 outline-none">
+                    <button onclick="sendMessage()" class="bg-white/20 hover:bg-white/30 transition rounded-xl px-6 py-3 font-medium">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-white/40 text-sm">
+            <p>Running on R1 • Local-first • Private by default</p>
+        </footer>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        let sessionId = 'web_' + Date.now();
+
+        // Initialize
+        async function init() {
+            await checkStatus();
+            await loadSkills();
+            await loadPersona();
+        }
+
+        // Check connection status
+        async function checkStatus() {
+            try {
+                const response = await fetch(`${API_URL}/openclaw/status`);
+                if (response.ok) {
+                    updateStatus('connected', 'Connected');
+                } else {
+                    updateStatus('error', 'Error');
+                }
+            } catch (error) {
+                updateStatus('error', 'Offline');
+            }
+        }
+
+        function updateStatus(type, text) {
+            const statusEl = document.getElementById('connection-status');
+            const dot = statusEl.querySelector('span:first-child');
+            const label = statusEl.querySelector('span:last-child');
+
+            dot.className = `w-2 h-2 rounded-full pulse-dot ${
+                type === 'connected' ? 'bg-green-400' :
+                type === 'error' ? 'bg-red-400' :
+                'bg-yellow-400'
+            }`;
+            label.textContent = text;
+        }
+
+        // Load skills
+        async function loadSkills() {
+            try {
+                const response = await fetch(`${API_URL}/openclaw/skills`);
+                const data = await response.json();
+                const skillsEl = document.getElementById('skills-list');
+
+                if (data.skills && data.skills.length > 0) {
+                    skillsEl.innerHTML = data.skills.map(skill => `
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                            ${skill}
+                        </div>
+                    `).join('');
+                } else {
+                    skillsEl.innerHTML = '<div class="text-white/40">No skills configured</div>';
+                }
+            } catch (error) {
+                console.error('Failed to load skills:', error);
+            }
+        }
+
+        // Load persona
+        async function loadPersona() {
+            try {
+                const response = await fetch(`${API_URL}/openclaw/persona`);
+                const data = await response.json();
+
+                document.getElementById('assistant-name').value = data.name || '';
+                document.getElementById('user-name').value = data.user_name || '';
+            } catch (error) {
+                console.error('Failed to load persona:', error);
+            }
+        }
+
+        // Update persona
+        async function updatePersona() {
+            const name = document.getElementById('assistant-name').value;
+            const userName = document.getElementById('user-name').value;
+
+            try {
+                await fetch(`${API_URL}/openclaw/persona`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, user_name: userName })
+                });
+
+                addMessage('system', 'Settings saved!');
+            } catch (error) {
+                addMessage('system', 'Failed to save settings');
+            }
+        }
+
+        // Send message
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            addMessage('user', message);
+            input.value = '';
+
+            try {
+                const response = await fetch(`${API_URL}/openclaw/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, session_id: sessionId })
+                });
+
+                const data = await response.json();
+                addMessage('assistant', data.response);
+            } catch (error) {
+                addMessage('assistant', 'Sorry, I had an error processing that. Please try again!');
+            }
+        }
+
+        // Add message to chat
+        function addMessage(role, text) {
+            const messagesEl = document.getElementById('chat-messages');
+            const bubble = document.createElement('div');
+
+            bubble.className = `chat-bubble p-4 rounded-2xl ${
+                role === 'user'
+                    ? 'bg-white/20 ml-auto rounded-tr-none'
+                    : role === 'system'
+                        ? 'bg-yellow-500/20 text-center text-sm'
+                        : 'bg-white/10 rounded-tl-none'
+            }`;
+
+            // Convert markdown-style formatting
+            text = text
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/`(.+?)`/g, '<code class="mono bg-black/20 px-1 rounded">$1</code>')
+                .replace(/\n/g, '<br>');
+
+            bubble.innerHTML = `<p>${text}</p>`;
+            messagesEl.appendChild(bubble);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        // Clear chat
+        function clearChat() {
+            document.getElementById('chat-messages').innerHTML = `
+                <div class="chat-bubble bg-white/10 rounded-2xl rounded-tl-none p-4">
+                    <p>Chat cleared. How can I help you?</p>
+                </div>
+            `;
+            sessionId = 'web_' + Date.now();
+        }
+
+        // Quick actions
+        async function quickAction(action) {
+            if (action === 'briefing') {
+                try {
+                    const response = await fetch(`${API_URL}/openclaw/proactive/briefing`, { method: 'POST' });
+                    const data = await response.json();
+                    addMessage('assistant', data.briefing);
+                } catch (error) {
+                    addMessage('assistant', 'Could not generate briefing');
+                }
+            } else if (action === 'greet') {
+                try {
+                    const response = await fetch(`${API_URL}/openclaw/quick/greet`, { method: 'POST' });
+                    const data = await response.json();
+                    addMessage('assistant', data.greeting);
+                } catch (error) {
+                    addMessage('assistant', 'Hello! How can I help?');
+                }
+            } else if (action === 'reminder') {
+                const title = prompt('What should I remind you about?');
+                if (title) {
+                    const when = prompt('When? (e.g., "in 30 minutes", "tomorrow at 3pm")');
+                    try {
+                        await fetch(`${API_URL}/openclaw/proactive/reminder`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ title, when })
+                        });
+                        addMessage('assistant', `✅ Reminder set: "${title}"`);
+                    } catch (error) {
+                        addMessage('assistant', 'Could not set reminder');
+                    }
+                }
+            }
+        }
+
+        // Voice mode
+        const voiceBtn = document.getElementById('voice-btn');
+        const voiceStatus = document.getElementById('voice-status');
+
+        voiceBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_URL}/openclaw/voice/status`);
+                const data = await response.json();
+
+                if (data.conversation_active) {
+                    await fetch(`${API_URL}/openclaw/voice/stop`, { method: 'POST' });
+                    voiceBtn.innerHTML = '<span>🎤</span><span>Start Voice Mode</span>';
+                    voiceStatus.classList.add('hidden');
+                } else {
+                    await fetch(`${API_URL}/openclaw/voice/start`, { method: 'POST' });
+                    voiceBtn.innerHTML = '<span>⏹️</span><span>Stop Voice Mode</span>';
+                    voiceStatus.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Voice toggle error:', error);
+            }
+        });
+
+        // Enter key to send
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>

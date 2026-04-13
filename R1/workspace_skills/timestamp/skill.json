@@ -1,0 +1,11 @@
+{
+  "name": "timestamp",
+  "description": "Returns the current timestamp in various formats - useful for time-sensitive tasks",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "triggers": ["time", "timestamp", "current time", "date"],
+  "tools_used": [],
+  "dependencies": [],
+  "config": {},
+  "source": "workspace"
+}

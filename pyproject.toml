@@ -1,0 +1,12 @@
+[project]
+name = "r1"
+version = "2.0.0"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "python-dotenv",
+  "httpx"
+]
+
+[tool.setuptools.packages.find]
+where = ["R1"]

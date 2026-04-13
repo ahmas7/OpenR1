@@ -1,0 +1,41 @@
+# ═══════════════════════════════════════════════════════════
+# R1 Project - Claude Code / AI Assistant Ignore
+# Files that AI assistants should not read or modify
+# ═══════════════════════════════════════════════════════════
+
+# Virtual environment
+.venv/
+venv/
+
+# Cache directories
+.cache/
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs and runtime data
+logs/
+*.log
+
+# Database files (auto-generated)
+R1/data/*.db
+*.sqlite
+
+# Backups
+.r1_backups/
+
+# Large binary files
+*.gguf
+*.bin
+*.safetensors
+*.pth
+*.pt
+*.onnx
+
+# Generated documentation
+docs/generated/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
