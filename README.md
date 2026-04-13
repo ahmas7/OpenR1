@@ -1,4 +1,6 @@
-# R1
+# OpenR1
+
+**this is not a fun project this my first Ai**
 
 Local-first FastAPI assistant platform with chat, skills, cron, webhooks, gateway, diagnostics, planning, voice, and operator tooling.
 
@@ -111,3 +113,4 @@ Heartbeat and reminders run in-process:
 - GGUF inference quality/runtime depends on `llama-cpp-python`
 - Live microphone STT on Windows still needs `PyAudio`
 - Optional capability packs: `text-pack`, `code-pack`, `docs-pack`, `audio-pack`, `vision-pack`
+
