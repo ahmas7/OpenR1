@@ -7,11 +7,27 @@ from typing import List, Optional
 from dataclasses import dataclass
 
 from .providers.base import BaseProvider, Message, ModelResponse
-from .providers.ollama import OllamaProvider
-from .providers.gguf import GGUFProvider
-from .providers.airllm import AirLLMProvider
+try:
+    from .providers.ollama import OllamaProvider
+except ImportError:
+    OllamaProvider = None
+
+try:
+    from .providers.gguf import GGUFProvider
+except ImportError:
+    GGUFProvider = None
+
+try:
+    from .providers.airllm import AirLLMProvider
+except ImportError:
+    AirLLMProvider = None
+
 from .providers.local_provider import LocalProvider
 from .providers.local_stub import LocalStubProvider
+try:
+    from .providers.audit_provider import AuditProvider
+except ImportError:
+    AuditProvider = None
 from ..config.settings import settings
 
 logger = logging.getLogger("R1")
@@ -40,7 +56,7 @@ class ModelManager:
         requested = settings.provider.lower()
 
         # Try the requested provider first
-        if requested == "gguf":
+        if requested == "gguf" and GGUFProvider:
             if settings.gguf_model_path:
                 try:
                     provider = GGUFProvider(settings.gguf_model_path)
@@ -58,7 +74,7 @@ class ModelManager:
             else:
                 logger.warning("GGUF requested but GGUF_MODEL_PATH not set")
 
-        if requested == "ollama":
+        if requested == "ollama" and OllamaProvider:
             try:
                 provider = OllamaProvider(settings.model, settings.ollama_endpoint)
                 health = await provider.health()
@@ -73,7 +89,7 @@ class ModelManager:
             except Exception as e:
                 logger.warning(f"Ollama initialization failed: {e}")
 
-        if requested == "airllm":
+        if requested == "airllm" and AirLLMProvider:
             if settings.airllm_model_path:
                 try:
                     provider = AirLLMProvider(
@@ -96,6 +112,18 @@ class ModelManager:
                     logger.warning(f"AirLLM initialization failed: {e}")
             else:
                 logger.warning("AirLLM requested but AIRLLM_MODEL_PATH not set")
+
+        if requested == "audit" and AuditProvider:
+            self._provider = AuditProvider()
+            self._provider_name = "audit"
+            self._initialized = True
+            return
+
+        if requested == "stub" and settings.dev_mode:
+            self._provider = LocalStubProvider()
+            self._provider_name = "stub"
+            self._initialized = True
+            return
 
         # Local fallback provider - always available, no external deps
         logger.info("Falling back to local provider (no external model needed)")
@@ -127,7 +155,7 @@ class ModelManager:
 
         # Check GGUF
         try:
-            if settings.gguf_model_path:
+            if settings.gguf_model_path and GGUFProvider:
                 provider = GGUFProvider(settings.gguf_model_path)
                 health = await provider.health()
                 providers_info.append(ProviderInfo(
@@ -141,7 +169,8 @@ class ModelManager:
 
         # Check Ollama
         try:
-            provider = OllamaProvider(settings.model, settings.ollama_endpoint)
+            if OllamaProvider:
+                provider = OllamaProvider(settings.model, settings.ollama_endpoint)
             health = await provider.health()
             providers_info.append(ProviderInfo(
                 id="ollama",
@@ -154,7 +183,7 @@ class ModelManager:
 
         # Check AirLLM
         try:
-            if settings.airllm_model_path:
+            if settings.airllm_model_path and AirLLMProvider:
                 provider = AirLLMProvider(
                     model_path=settings.airllm_model_path,
                     compression=settings.airllm_compression,

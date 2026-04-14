@@ -148,6 +148,11 @@ async def root():
     return FileResponse(str(WEB_DIR / "index.html"))
 
 
+@app.get("/openclaw.html")
+async def openclaw_ui():
+    return FileResponse(str(WEB_DIR / "openclaw.html"))
+
+
 # ==================== CORE ROUTES ====================
 
 

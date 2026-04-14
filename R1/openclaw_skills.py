@@ -6,6 +6,7 @@ Pre-built skills for common personal assistant tasks
 import os
 import json
 import asyncio
+import inspect
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
 from pathlib import Path
@@ -519,7 +520,9 @@ class SkillRegistry:
             if command in text_lower:
                 # Extract arguments (basic)
                 # This is simplified - real implementation would use proper NLP
-                return await handler(text)
+                if inspect.iscoroutinefunction(handler):
+                    return await handler(text)
+                return handler(text)
 
         return None
 

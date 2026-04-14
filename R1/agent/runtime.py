@@ -371,6 +371,12 @@ class Runtime:
             await self.initialize()
         
         session = self.session_manager.get_or_create_session(session_id)
+
+        # Sync with persistent memory if empty
+        if not session.messages:
+            history = self.memory_store.get_conversation(session_id)
+            if history:
+                session.messages = history
         
         loop = AgentLoop(session)
         
