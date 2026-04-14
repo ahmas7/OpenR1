@@ -86,6 +86,10 @@ class AgentLoop:
         self.state.plan = self.planner._simple_plan(self.state.goal)
         self.report.plan_steps = self.state.plan.get("steps", [])
         
+        # Add the goal to messages so the agent has conversation history to look at
+        if not self.state.messages:
+            self.state.messages.append({"role": "user", "content": self.state.goal})
+
         while self._running and self.state.iteration < settings.max_iterations:
             self.state.iteration += 1
             self.report.iteration_count = self.state.iteration
@@ -134,8 +138,21 @@ class AgentLoop:
         
         # Execute tool if needed
         if self.state.last_action and self.state.last_action != "respond":
+            action = self.state.last_action
+            args = self.state.last_result
+
             await self._act()
             
+            # Add to conversation history so the model knows what it did
+            self.state.messages.append({
+                "role": "assistant",
+                "content": f"TOOL: {action}\n{args}"
+            })
+            self.state.messages.append({
+                "role": "user",
+                "content": f"Result: {self.state.last_result}"
+            })
+
             # Verify after action
             verified = await self._verify()
             
@@ -196,7 +213,7 @@ class AgentLoop:
         return False
 
     def _detect_infinite_loop(self) -> bool:
-        """Detect if same tool is being called repeatedly"""
+        """Detect if same tool with same args is being called repeatedly"""
         tool_history = self.memory.get_tool_history(self.state.session_id, limit=10)
         
         if len(tool_history) < 3:
@@ -204,10 +221,11 @@ class AgentLoop:
         
         # Check last 5 tool calls
         recent_calls = tool_history[-5:]
-        tool_names = [call["tool_name"] for call in recent_calls]
+        # Only match tool name AND arguments
+        fingerprints = [f"{call['tool_name']}:{call.get('arguments')}" for call in recent_calls]
         
-        # If same tool called 3+ times in a row
-        if len(set(tool_names)) == 1 and len(tool_names) >= 3:
+        # If same tool+args called 3+ times in a row
+        if len(set(fingerprints)) == 1 and len(fingerprints) >= 3:
             return True
         
         return False
@@ -285,6 +303,10 @@ Now respond to achieve this goal: {self.state.goal}"""
         messages = [
             Message(role="system", content=system_prompt)
         ]
+
+        # Add goal as first message if no messages exist
+        if not self.state.messages:
+             messages.append(Message(role="user", content=self.state.goal))
 
         for msg in self.state.messages[-5:]:
             messages.append(Message(role=msg["role"], content=msg["content"]))
@@ -581,8 +603,8 @@ Now respond to achieve this goal: {self.state.goal}"""
         
         # Only auto-complete when the result is strong enough; otherwise let the
         # model reason over the completed step and emit DONE explicitly.
-        if self.planner.is_plan_complete(self.state.plan) and self._should_auto_complete():
-            return True
+        # if self.planner.is_plan_complete(self.state.plan) and self._should_auto_complete():
+        #     return True
         
         # Check simple success conditions
         goal = self.state.goal.lower()
