@@ -14,16 +14,16 @@ import asyncio
 from R1.memory.store import get_memory_store
 from R1.voice_system import speak, set_voice_preference
 
-PERSONA_FILE = Path("E:/MYAI/R1/data/persona.json")
+PERSONA_FILE = Path(__file__).resolve().parent.parent / "data" / "persona.json"
 
 
 @dataclass
 class PersonaConfig:
     """AI Assistant Persona Configuration"""
 
-    name: str = "R1"  # User can name their assistant
-    gender: str = "neutral"  # male, female, neutral
-    personality: str = "helpful, friendly, and proactive"
+    name: str = "Jarvis"  # User can name their assistant
+    gender: str = "male"  # male, female, neutral
+    personality: str = "Refined, highly competent, British-accented, and proactive. You address the user with respect (e.g., 'Sir' or 'Ma'am') and anticipate needs before they are explicitly stated."
     voice_enabled: bool = True
     voice_rate: int = 150
     wake_word: str = "hey r1"

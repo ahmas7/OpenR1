@@ -114,7 +114,17 @@ class OpenClaw:
 
         # Enhance with persona context
         context = persona.get_context_prompt()
-        enhanced_message = f"{context}\n\nUser: {message}"
+
+        # Add system health context for "Jarvis" feel
+        try:
+            import psutil
+            cpu = psutil.cpu_percent()
+            mem = psutil.virtual_memory().percent
+            health_context = f"\n[System Status: CPU {cpu}%, RAM {mem}%]"
+        except ImportError:
+            health_context = ""
+
+        enhanced_message = f"{context}{health_context}\n\nUser: {message}"
 
         result = await runtime.chat(enhanced_message, session_id)
         response = result.get("response", "I'm here to help!")

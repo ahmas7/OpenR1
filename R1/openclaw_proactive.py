@@ -18,7 +18,7 @@ from R1.jobs.manager import JobDefinition as JobDefinition
 
 logger = logging.getLogger("R1:proactive")
 
-REMINDERS_FILE = Path("E:/MYAI/R1/data/reminders.json")
+REMINDERS_FILE = Path(__file__).resolve().parent.parent / "data" / "reminders.json"
 
 
 @dataclass
