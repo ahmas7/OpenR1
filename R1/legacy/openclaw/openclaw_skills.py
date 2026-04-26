@@ -14,11 +14,11 @@ import logging
 from R1.tools import get_tool_registry
 
 try:
-    from R1.openclaw_persona import persona
+    from R1.legacy.openclaw.openclaw_persona import persona
 except ImportError:
     persona = None
 try:
-    from R1.openclaw_proactive import add_reminder
+    from R1.legacy.openclaw.openclaw_proactive import add_reminder
 except ImportError:
 
     def add_reminder(task, due):
@@ -171,7 +171,7 @@ class TodoSkill:
     """
 
     def __init__(self):
-        self.todo_file = Path(__file__).resolve().parent.parent / "data" / "todos.json"
+        self.todo_file = Path("E:/MYAI/R1/data/todos.json")
         self.todos: List[Dict] = []
         self._load()
 

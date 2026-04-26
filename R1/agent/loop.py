@@ -55,7 +55,7 @@ class AgentLoop:
     def _get_self_improver(self):
         if self._self_improver is None:
             try:
-                from ..self_improver import get_self_improver
+                from .learning.self_improver import get_self_improver
                 self._self_improver = get_self_improver()
             except Exception as e:
                 logger.warning(f"Self-improver not available: {e}")

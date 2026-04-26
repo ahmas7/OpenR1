@@ -23,7 +23,7 @@ except ImportError:
     logger.warning("python-telegram-bot not installed. Run: pip install python-telegram-bot")
 
 from R1.agent import get_runtime
-from R1.openclaw_persona import persona
+from R1.legacy.openclaw.openclaw_persona import persona
 from R1.memory.store import get_memory_store
 
 

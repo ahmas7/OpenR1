@@ -9,19 +9,19 @@ from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from R1.openclaw import openclaw
-from R1.openclaw_persona import persona
-from R1.openclaw_voice import (
+from R1.legacy.openclaw.openclaw import openclaw
+from R1.legacy.openclaw.openclaw_persona import persona
+from R1.legacy.openclaw.openclaw_voice import (
     start_voice_mode, stop_voice_mode,
     start_wake_word_listener, stop_wake_word_listener,
     get_voice_status
 )
-from R1.openclaw_proactive import (
+from R1.legacy.openclaw.openclaw_proactive import (
     get_proactive_status, add_reminder,
     proactive_agent
 )
-from R1.openclaw_skills import skill_registry
-from R1.openclaw_telegram import get_telegram_status
+from R1.legacy.openclaw.openclaw_skills import skill_registry
+from R1.legacy.openclaw.openclaw_telegram import get_telegram_status
 
 router = APIRouter(prefix="/openclaw", tags=["openclaw"])
 

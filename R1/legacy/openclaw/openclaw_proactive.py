@@ -12,13 +12,13 @@ import logging
 import json
 from pathlib import Path
 
-from R1.openclaw_persona import persona
+from R1.legacy.openclaw.openclaw_persona import persona
 from R1.memory.store import get_memory_store
 from R1.jobs.manager import JobDefinition as JobDefinition
 
 logger = logging.getLogger("R1:proactive")
 
-REMINDERS_FILE = Path(__file__).resolve().parent.parent / "data" / "reminders.json"
+REMINDERS_FILE = Path("E:/MYAI/R1/data/reminders.json")
 
 
 @dataclass

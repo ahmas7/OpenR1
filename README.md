@@ -1,8 +1,24 @@
-# OpenR1
+# OpenR1: The Jarvis Assistant
 
-**this is not a fun project this my first Ai**
+**OpenR1** is a local-first, semi-autonomous AI operator platform. Unlike standard chatbots, it is designed as a "Local AGI" shell that prioritizes **action over conversation**. It exists to execute complex, multi-step business and content automation workflows directly on a user's machine, maintaining absolute data privacy.
 
-Local-first FastAPI assistant platform with chat, skills, cron, webhooks, gateway, diagnostics, planning, voice, and operator tooling.
+## What it can do today
+*   **Autonomous Problem Solving:** Uses a "Think-Act-Verify" loop to decompose high-level goals into executable steps.
+*   **Local Model Orchestration:** Seamlessly switches between **GGUF**, **Ollama**, and **AirLLM** (running 70B+ models on consumer GPUs).
+*   **System & Browser Control:** Directly executes shell commands, manages the filesystem, and operates a headless **Playwright** browser for web research.
+*   **Background Automation:** Handles cron-based and interval-based tasks via an internal Job Manager.
+*   **Self-Improving Memory:** Maintains persistent memory and tracks "trust levels" to adjust permissions dynamically.
+*   **Multimodal Interface:** Supports wake-word detection, STT/TTS, and a holographic-style Web HUD for real-time telemetry.
+
+## Architecture Overview
+*   **API Layer (FastAPI):** Central nervous system exposing endpoints for agent orchestration and system diagnostics.
+*   **Agent Loop (The Brain):** Observe → Think → Act → Verify → Remember cycle.
+*   **Tool Registry:** Safety-conscious execution layer for shell, filesystem, and browser operations.
+*   **Skills Runtime:** Modular plugin system for high-level capabilities like "Global Intelligence".
+*   **Model Manager:** Provider-agnostic interface for local LLM backends.
+
+## End-State Vision
+The end-state for OpenR1 is a **fully autonomous digital employee**. It transitions from a tool that *responds* to a system that *operates*—managing entire income-generating workflows and maintaining its own codebase without human intervention.
 
 ## Quick Start
 
