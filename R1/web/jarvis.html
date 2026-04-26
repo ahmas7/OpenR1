@@ -305,9 +305,9 @@
             <div className="col-span-3 flex flex-col gap-6">
               <HUDPanel title="System Biometrics" className="flex-1">
                 <div className="grid grid-cols-2 gap-y-8 mt-4">
-                  <CircularStat label="Neural Load" value="24%" percent={24} />
+                  <CircularStat label="Neural Load" value={health?.model_health?.cpu_percent ? `${health.model_health.cpu_percent}%` : "24%"} percent={health?.model_health?.cpu_percent || 24} />
                   <CircularStat label="Synapse Latency" value="12ms" percent={12} color="var(--hud-gold)" />
-                  <CircularStat label="Memory Buffer" value="8.4GB" percent={65} />
+                  <CircularStat label="Memory Buffer" value={health?.model_health?.memory_used_gb ? `${health.model_health.memory_used_gb}GB` : "8.4GB"} percent={health?.model_health?.memory_percent || 65} />
                   <CircularStat label="Thread Heat" value="42°C" percent={42} color="var(--hud-red)" />
                 </div>
                 <div className="mt-8 space-y-2">
@@ -346,6 +346,9 @@
                 <HUDPanel title="Active Subsystems" className="flex-1 overflow-y-auto">
                     <div className="space-y-4 mt-2">
                         {[
+                            { name: 'Global_Intelligence', status: 'Active', color: 'text-cyan-400' },
+                            { name: 'Self_Improver', status: 'Learning', color: 'text-purple-400' },
+                            { name: 'Recursive_Writer', status: 'Standby', color: 'text-blue-400' },
                             { name: 'Vision_Core', status: 'Active', color: 'text-green-400' },
                             { name: 'Semantic_Graph', status: 'Indexing', color: 'text-yellow-400' },
                             { name: 'Proactive_Loop', status: 'Monitoring', color: 'text-green-400' },

@@ -158,6 +158,16 @@ async def health():
         model_mgr = get_model_manager()
         model_health = await model_mgr.health()
 
+        # Add system metrics
+        try:
+            import psutil
+            model_health["cpu_percent"] = psutil.cpu_percent()
+            virtual_mem = psutil.virtual_memory()
+            model_health["memory_percent"] = virtual_mem.percent
+            model_health["memory_used_gb"] = round(virtual_mem.used / (1024**3), 1)
+        except:
+            pass
+
         return HealthResponse(
             status="healthy" if model_health.get("healthy") else "degraded",
             timestamp=datetime.utcnow().isoformat(),

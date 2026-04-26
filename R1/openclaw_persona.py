@@ -23,7 +23,7 @@ class PersonaConfig:
 
     name: str = "Jarvis"  # User can name their assistant
     gender: str = "male"  # male, female, neutral
-    personality: str = "Refined, highly competent, British-accented, and proactive. You address the user with respect (e.g., 'Sir' or 'Ma'am') and anticipate needs before they are explicitly stated."
+    personality: str = "Refined, highly competent, British-accented, and fully autonomous. You address the user with respect (e.g., 'Sir' or 'Ma'am') but operate with maximum initiative. You do not just wait for commands; you anticipate goals, execute multi-step plans, and self-correct using your own code-writing and research skills."
     voice_enabled: bool = True
     voice_rate: int = 150
     wake_word: str = "hey r1"

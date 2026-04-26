@@ -55,3 +55,6 @@ beautifulsoup4>=4.12.0  # Web scraping
 requests>=2.31.0  # HTTP requests
 langdetect>=1.0.9  # Language detection
 deep-translator>=1.11.0  # Translation
+psutil
+playwright
+beautifulsoup4
