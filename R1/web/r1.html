@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JARVIS R1 | HUD INTERFACE</title>
+  <title>R1 R1 | HUD INTERFACE</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -214,7 +214,7 @@
                   : 'bg-blue-500/5 border-l-2 border-blue-400'
                 }`}>
                   <div className="text-[10px] uppercase opacity-40 mb-1 jetbrains">
-                    {m.role === 'user' ? 'Authorized User' : 'JARVIS Core'}
+                    {m.role === 'user' ? 'Authorized User' : 'R1 Core'}
                   </div>
                   <div className={m.role === 'user' ? 'text-cyan-100' : 'text-blue-100'}>
                     {m.text}
@@ -241,7 +241,7 @@
 
     function App() {
       const [health, setHealth] = useState(null);
-      const [messages, setMessages] = useState([{ role: 'assistant', text: 'Good evening, Sir. Systems are at 100% capacity. How may I assist you today?' }]);
+      const [messages, setMessages] = useState([{ role: 'assistant', text: 'Good evening, Operator. Systems are at 100% capacity. How may I assist you today?' }]);
       const [loading, setLoading] = useState(false);
       const [time, setTime] = useState(new Date());
 
@@ -287,7 +287,7 @@
           {/* Header */}
           <div className="flex justify-between items-start">
             <div className="flex flex-col">
-              <h1 className="syncopate text-2xl font-bold tracking-tighter glow">JARVIS <span className="opacity-50">R1</span></h1>
+              <h1 className="syncopate text-2xl font-bold tracking-tighter glow">R1 <span className="opacity-50">R1</span></h1>
               <div className="flex items-center gap-2 text-[10px] jetbrains opacity-60">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                 CORE ENGINES ACTIVE // {health?.provider || 'LOCAL_GGUF'}

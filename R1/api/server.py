@@ -145,7 +145,7 @@ TRAIN_JAX_SCRIPT = STACK_DIR / "training" / "train_jax.py"
 
 @app.get("/")
 async def root():
-    return FileResponse(str(WEB_DIR / "jarvis.html"))
+    return FileResponse(str(WEB_DIR / "r1.html"))
 
 
 # ==================== CORE ROUTES ====================

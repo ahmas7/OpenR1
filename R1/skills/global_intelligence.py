@@ -1,5 +1,5 @@
 """
-Jarvis Global Intelligence Skill
+R1 Global Intelligence Skill
 Autonomous web research, data extraction, and high-level reporting.
 """
 import asyncio
@@ -60,7 +60,7 @@ class GlobalIntelligenceSkill:
             "topic": topic,
             "timestamp": asyncio.get_event_loop().time(),
             "findings": findings,
-            "summary": f"Jarvis has compiled {len(findings)} intelligence nodes regarding '{topic}'."
+            "summary": f"R1 has compiled {len(findings)} intelligence nodes regarding '{topic}'."
         }
 
         report_path.write_text(json.dumps(report, indent=2))
@@ -86,7 +86,7 @@ def get_skill_manifest() -> SkillManifest:
         description="Autonomous deep web research and data synthesis engine.",
         emoji="🌐",
         version="1.0.0",
-        author="Jarvis",
+        author="R1",
         commands=[
             {
                 "name": "research",

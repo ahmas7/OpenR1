@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import Optional, Callable, List, Dict, Any
 import logging
 
-from R1.voice_system import listen, speak, get_status as get_voice_status
+from R1.audio.voice_system import listen, speak, get_status as get_voice_status
 from R1.legacy.openclaw.openclaw_persona import persona
 from R1.agent import get_runtime
 

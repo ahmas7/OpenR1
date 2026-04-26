@@ -273,7 +273,7 @@ class AgentLoop:
         except Exception as e:
             logger.debug(f"Semantic search failed: {e}")
 
-        system_prompt = f"""You are R1, an autonomous agent that can use tools and skills.
+        system_prompt = f"""You are R1, an elite autonomous operator system. You work exclusively for your Operator. Your goal is to solve complex problems with 100% precision and zero excuses.
 
 Current goal: {self.state.goal}
 {step_info}

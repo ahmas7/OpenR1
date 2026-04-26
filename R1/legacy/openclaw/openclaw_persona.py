@@ -12,7 +12,7 @@ from typing import Dict, List, Optional, Any
 import asyncio
 
 from R1.memory.store import get_memory_store
-from R1.voice_system import speak, set_voice_preference
+from R1.audio.voice_system import speak, set_voice_preference
 
 PERSONA_FILE = Path("E:/MYAI/R1/data/persona.json")
 
@@ -100,7 +100,7 @@ class PersonaManager:
         """Change the wake word"""
         self.config.wake_word = word.lower()
         self._save_config()
-        from R1.voice_system import set_wake_word
+        from R1.audio.voice_system import set_wake_word
 
         set_wake_word(word.lower())
         return f"Wake word set to: '{word}'"

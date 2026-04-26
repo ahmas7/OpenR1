@@ -47,7 +47,7 @@ except:
 
 # Voice system
 try:
-    from R1.voice_system import speak, stop_speaking, listen, get_status as voice_status, start_wake_listener, stop_wake_listener, WAKE_WORD
+    from R1.audio.voice_system import speak, stop_speaking, listen, get_status as voice_status, start_wake_listener, stop_wake_listener, WAKE_WORD
     VOICE_AVAILABLE = True
 except:
     VOICE_AVAILABLE = False
