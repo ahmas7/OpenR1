@@ -1,0 +1,54 @@
+INFO:R1:Legacy routes are disabled via R1_ENABLE_LEGACY_ROUTES.
+INFO:R1:OpenClaw routes loaded.
+INFO:R1:AGI routes loaded.
+INFO:     Started server process [2216862]
+INFO:     Waiting for application startup.
+INFO:R1:Registered tool: shell (safety: review)
+INFO:R1:Registered tool: filesystem (safety: review)
+INFO:R1:Registered tool: browser (safety: safe)
+INFO:R1:Registered tool: code_exec (safety: dangerous)
+INFO:R1:Registered tool: app_open (safety: review)
+INFO:R1:Initializing R1 Runtime...
+INFO:R1:Initializing ModelManager...
+WARNING:R1:Ollama not healthy: All connection attempts failed
+INFO:R1:Falling back to local provider (no external model needed)
+INFO:R1:✓ Local fallback provider initialized
+INFO:R1:✓ Model manager initialized
+INFO:R1:✓ Tool registry initialized with 5 tools
+INFO:R1:Registered job: heartbeat (Heartbeat summary) every 60s
+INFO:R1:Registered job: reminders (Reminders) every 300s
+INFO:R1:Registered job: proactive_maintenance (Proactive Maintenance) every 0s cron=0 3 * * *
+INFO:R1:R1 Runtime ready!
+INFO:R1:Job manager started with 3 active jobs
+INFO:R1:openclaw:🦞 Initializing OpenClaw...
+INFO:R1:proactive:Proactive agent started
+INFO:R1:openclaw:✓ Proactive agent started
+INFO:R1:openclaw:✓ OpenClaw initialized successfully
+INFO:R1:✓ OpenClaw initialized
+INFO:R1:skills:Initializing SkillsRuntime...
+INFO:R1:skills:SkillsRuntime initialized with 0 skills
+INFO:R1:Heartbeat: {'timestamp': '2026-04-26T09:43:24.707345', 'provider': 'local', 'tools': 5, 'skills': 0, 'sessions': 0, 'pending_reminders': 0, 'jobs': {'running': True, 'total_jobs': 3, 'active_jobs': 3, 'jobs_with_errors': []}}
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:R1:Heartbeat: {'timestamp': '2026-04-26T09:44:24.708312', 'provider': 'local', 'tools': 5, 'skills': 0, 'sessions': 0, 'pending_reminders': 0, 'jobs': {'running': True, 'total_jobs': 3, 'active_jobs': 3, 'jobs_with_errors': []}}
+STT not available: No module named 'speech_recognition'
+INFO:     127.0.0.1:35914 - "GET /health HTTP/1.1" 200 OK
+INFO:R1:Heartbeat: {'timestamp': '2026-04-26T09:45:24.709704', 'provider': 'local', 'tools': 5, 'skills': 0, 'sessions': 0, 'pending_reminders': 0, 'jobs': {'running': True, 'total_jobs': 3, 'active_jobs': 3, 'jobs_with_errors': []}}
+INFO:R1:Heartbeat: {'timestamp': '2026-04-26T09:46:24.711275', 'provider': 'local', 'tools': 5, 'skills': 0, 'sessions': 0, 'pending_reminders': 0, 'jobs': {'running': True, 'total_jobs': 3, 'active_jobs': 3, 'jobs_with_errors': []}}
+INFO:     127.0.0.1:59400 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59400 - "GET /health HTTP/1.1" 200 OK
+INFO:R1:Heartbeat: {'timestamp': '2026-04-26T09:47:24.712709', 'provider': 'local', 'tools': 5, 'skills': 0, 'sessions': 0, 'pending_reminders': 0, 'jobs': {'running': True, 'total_jobs': 3, 'active_jobs': 3, 'jobs_with_errors': []}}
+INFO:R1:Heartbeat: {'timestamp': '2026-04-26T09:48:24.713631', 'provider': 'local', 'tools': 5, 'skills': 0, 'sessions': 0, 'pending_reminders': 0, 'jobs': {'running': True, 'total_jobs': 3, 'active_jobs': 3, 'jobs_with_errors': []}}
+INFO:R1:Heartbeat: {'timestamp': '2026-04-26T09:49:24.714378', 'provider': 'local', 'tools': 5, 'skills': 0, 'sessions': 0, 'pending_reminders': 0, 'jobs': {'running': True, 'total_jobs': 3, 'active_jobs': 3, 'jobs_with_errors': []}}
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:R1:Job manager stopped
+INFO:R1:openclaw:Shutting down OpenClaw...
+INFO:R1:voice_conversation:Voice conversation stopped
+INFO:R1:voice_conversation:Voice conversation stopped
+INFO:R1:voice_conversation:Wake word listener stopped
+INFO:R1:proactive:Proactive agent stopped
+INFO:R1:openclaw:OpenClaw shutdown complete
+INFO:R1:✓ OpenClaw shutdown
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2216862]

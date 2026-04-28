@@ -22,8 +22,8 @@ except ImportError:
     TELEGRAM_AVAILABLE = False
     logger.warning("python-telegram-bot not installed. Run: pip install python-telegram-bot")
 
-from R1.agent import get_runtime
-from R1.openclaw_persona import persona
+from R1.agent.runtime import get_runtime
+from R1.legacy.openclaw.openclaw_persona import persona
 from R1.memory.store import get_memory_store
 
 
@@ -182,7 +182,7 @@ Examples:
 
     async def _cmd_memory(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /memory command"""
-        facts = get_memory_store().get_facts()
+        facts = get_memory_store().get_all_facts()
 
         if not facts:
             await update.message.reply_text("🤔 I don't have any memories yet. Tell me something about yourself!")
@@ -224,15 +224,10 @@ Examples:
 
     async def _cmd_tools(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /tools command"""
-        from R1.tools import tools
+        from R1.tools.registry import get_tool_registry
+        tools = get_tool_registry()
 
-        tool_list = [
-            "📧 Email - Send and check emails",
-            "📅 Calendar - Manage events",
-            "📁 Files - Read/write files",
-            "🗄️ Database - Query SQLite",
-            "🔔 Notifications - Desktop alerts",
-        ]
+        tool_list = [f"• {t.name}: {t.description}" for t in tools.list_tools()]
 
         await update.message.reply_text("Available tools:\n\n" + "\n".join(tool_list))
 
@@ -258,8 +253,8 @@ Examples:
             await runtime.initialize()
 
             # Enhance with persona context
-            context = persona.get_context_prompt()
-            enhanced_message = f"{context}\n\nUser message: {message_text}"
+            persona_context = persona.get_context_prompt()
+            enhanced_message = f"{persona_context}\n\nUser message: {message_text}"
 
             result = await runtime.chat(enhanced_message, session_id)
             response = result.get("response", "I'm here to help!")
@@ -296,19 +291,7 @@ Examples:
             await query.edit_message_text(f"🔔 {result}")
 
         elif data == "briefing_calendar":
-            from R1.tools import tools
-            result = await tools.calendar.get_events()
-            if result.get("success"):
-                events = result.get("events", [])
-                if events:
-                    lines = ["📅 Upcoming events:"]
-                    for e in events[:10]:
-                        lines.append(f"  • {e.get('date')} {e.get('time', '')}: {e.get('title')}")
-                    await query.edit_message_text("\n".join(lines))
-                else:
-                    await query.edit_message_text("📅 No upcoming events found.")
-            else:
-                await query.edit_message_text("❌ Couldn't access calendar.")
+            await query.edit_message_text("📅 Calendar feature coming soon!")
 
         elif data == "briefing_reminders":
             await query.edit_message_text("⏰ Reminders feature coming soon!")

@@ -173,7 +173,7 @@ def setup_persona():
         config['briefing_time'] = briefing_time if briefing_time else "08:00"
 
     # Save persona
-    from R1.openclaw_persona import persona
+    from R1.legacy.openclaw.openclaw_persona import persona
     for key, value in config.items():
         if hasattr(persona.config, key):
             setattr(persona.config, key, value)

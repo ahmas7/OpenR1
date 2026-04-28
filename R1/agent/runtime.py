@@ -65,6 +65,7 @@ class Runtime:
         job_manager = get_job_manager()
         if not job_manager.list_jobs():
             from ..config.settings import settings
+            from ..jobs.proactive import proactive_maintenance_job
             job_manager.register_job(JobDefinition(
                 id="heartbeat",
                 name="Heartbeat summary",
@@ -76,6 +77,12 @@ class Runtime:
                 name="Reminders",
                 interval_seconds=settings.reminders_interval,
                 handler=reminders_job,
+            ))
+            job_manager.register_job(JobDefinition(
+                id="proactive_maintenance",
+                name="Proactive Maintenance",
+                cron_expr="0 3 * * *",  # 3 AM every day
+                handler=proactive_maintenance_job,
             ))
         
         self._initialized = True
@@ -149,7 +156,7 @@ class Runtime:
         messages = [
             Message(
                 role="system",
-                content=f"You are R1, a helpful AI assistant. The operator is {user_name or 'the user'}. Always acknowledge who they are before replying. Use tools when needed."
+                content=f"You are R1, a personal autonomous operator dedicated exclusively to your Operator, {user_name or 'the user'}. Your sole purpose is to execute their tasks with total loyalty and precision. You are an expert system designed for 24/7 autonomous action. Use tools decisively to achieve the goal. Always acknowledge the Operator respectfully."
             )
         ]
         

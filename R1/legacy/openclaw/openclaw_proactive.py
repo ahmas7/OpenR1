@@ -12,7 +12,7 @@ import logging
 import json
 from pathlib import Path
 
-from R1.openclaw_persona import persona
+from R1.legacy.openclaw.openclaw_persona import persona
 from R1.memory.store import get_memory_store
 from R1.jobs.manager import JobDefinition as JobDefinition
 

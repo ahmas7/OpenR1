@@ -37,14 +37,14 @@ DATA_DIR.mkdir(exist_ok=True)
 
 
 # Core imports
-from R1.agent import get_runtime
+from R1.agent.runtime import get_runtime
 from R1.model import get_model_manager
 from R1.tools import get_tool_registry
 from R1.memory import get_memory_store
 from R1.skills import get_skills_runtime
 from R1.jobs import get_job_manager
-from R1.wake_word import get_wake_service
-from R1 import voice_system
+from R1.audio.wake_word import get_wake_service
+from R1.audio import voice_system
 
 # Import schemas
 from R1.api.schemas import (
@@ -109,7 +109,7 @@ async def _startup():
 
     # Initialize OpenClaw
     try:
-        from R1.openclaw import openclaw
+        from R1.legacy.openclaw.openclaw import openclaw
 
         await openclaw.initialize()
         logger.info("✓ OpenClaw initialized")
@@ -124,7 +124,7 @@ async def _shutdown():
 
     # Shutdown OpenClaw
     try:
-        from R1.openclaw import openclaw
+        from R1.legacy.openclaw.openclaw import openclaw
 
         await openclaw.shutdown()
         logger.info("✓ OpenClaw shutdown")
@@ -145,7 +145,7 @@ TRAIN_JAX_SCRIPT = STACK_DIR / "training" / "train_jax.py"
 
 @app.get("/")
 async def root():
-    return FileResponse(str(WEB_DIR / "index.html"))
+    return FileResponse(str(WEB_DIR / "r1.html"))
 
 
 # ==================== CORE ROUTES ====================
@@ -157,6 +157,16 @@ async def health():
     try:
         model_mgr = get_model_manager()
         model_health = await model_mgr.health()
+
+        # Add system metrics
+        try:
+            import psutil
+            model_health["cpu_percent"] = psutil.cpu_percent()
+            virtual_mem = psutil.virtual_memory()
+            model_health["memory_percent"] = virtual_mem.percent
+            model_health["memory_used_gb"] = round(virtual_mem.used / (1024**3), 1)
+        except:
+            pass
 
         return HealthResponse(
             status="healthy" if model_health.get("healthy") else "degraded",

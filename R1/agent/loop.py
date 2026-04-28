@@ -50,6 +50,16 @@ class AgentLoop:
         self._running = False
         self.report = ExecutionReport()
         self._skills_runtime = None
+        self._self_improver = None
+
+    def _get_self_improver(self):
+        if self._self_improver is None:
+            try:
+                from .learning.self_improver import get_self_improver
+                self._self_improver = get_self_improver()
+            except Exception as e:
+                logger.warning(f"Self-improver not available: {e}")
+        return self._self_improver
     
     def _get_skills_runtime(self):
         """Lazy load skills runtime"""
@@ -85,6 +95,9 @@ class AgentLoop:
         # Initialize plan with at least one step
         self.state.plan = self.planner._simple_plan(self.state.goal)
         self.report.plan_steps = self.state.plan.get("steps", [])
+
+        # Start of goal learning
+        improver = self._get_self_improver()
         
         while self._running and self.state.iteration < settings.max_iterations:
             self.state.iteration += 1
@@ -109,6 +122,19 @@ class AgentLoop:
             # Check for terminal signals
             if self.state.status in (AgentStatus.DONE, AgentStatus.ERROR):
                 logger.info(f"Agent stopped with status: {self.state.status}")
+
+                # Learn from the outcome
+                if improver:
+                    outcome = "success" if self.state.status == AgentStatus.DONE else "failure"
+                    improver.learn_from_interaction(
+                        user_input=self.state.goal,
+                        ai_response=str(self.state.last_result),
+                        outcome=outcome,
+                        tools_used=[c["tool"] for c in self.report.tool_calls]
+                    )
+                    # Update trust level based on success
+                    improver.update_trust("agent_loop", self.state.status == AgentStatus.DONE)
+
                 break
             
             # Check if max iterations reached
@@ -247,7 +273,7 @@ class AgentLoop:
         except Exception as e:
             logger.debug(f"Semantic search failed: {e}")
 
-        system_prompt = f"""You are R1, an autonomous agent that can use tools and skills.
+        system_prompt = f"""You are R1, an elite autonomous operator system. You work exclusively for your Operator. Your goal is to solve complex problems with 100% precision and zero excuses.
 
 Current goal: {self.state.goal}
 {step_info}
@@ -527,6 +553,16 @@ Now respond to achieve this goal: {self.state.goal}"""
         # Regular tool execution
         logger.info(f"Executing tool: {tool_name} with args: {arguments}")
         
+        # Check permissions via self-improver
+        improver = self._get_self_improver()
+        if improver:
+            # Basic permission check
+            if not improver.check_permission(tool_name):
+                # If trust is low, we might need confirmation or block
+                if improver.get_trust_level().value in ["stranger", "acquaintance"]:
+                     logger.warning(f"Restricted tool '{tool_name}' access at trust level '{improver.get_trust_level().value}'")
+                     # For now, let it pass but log it, or we could block it here
+
         result = await self.tools.execute(tool_name, arguments)
 
         if isinstance(result, ToolResult) and result.requires_confirmation:
@@ -550,6 +586,10 @@ Now respond to achieve this goal: {self.state.goal}"""
             str(result.output)[:500],
             result.success
         )
+
+        # Update trust based on tool success
+        if improver:
+            improver.update_trust(f"tool:{tool_name}", result.success)
         
         # Add to report
         self.report.tool_calls.append({

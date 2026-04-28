@@ -7,8 +7,8 @@ import time
 from typing import Optional
 
 from .voice_system import listen, speak, start_wake_listener, stop_wake_listener, get_status, set_wake_word, set_voice_preference
-from .agent import get_runtime
-from .config.settings import settings
+from ..agent.runtime import get_runtime
+from ..config.settings import settings
 
 
 class WakeWordService:

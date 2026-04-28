@@ -7,19 +7,19 @@ import logging
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-from R1.openclaw_persona import persona
-from R1.openclaw_voice import (
+from R1.legacy.openclaw.openclaw_persona import persona
+from R1.legacy.openclaw.openclaw_voice import (
     start_voice_mode, stop_voice_mode,
     start_wake_word_listener, stop_wake_word_listener,
     get_voice_status, voice_conversation
 )
-from R1.openclaw_telegram import (
+from R1.legacy.openclaw.openclaw_telegram import (
     start_telegram, stop_telegram, get_telegram_status
 )
-from R1.openclaw_proactive import (
+from R1.legacy.openclaw.openclaw_proactive import (
     start_proactive, stop_proactive, get_proactive_status, add_reminder
 )
-from R1.openclaw_skills import skill_registry
+from R1.legacy.openclaw.openclaw_skills import skill_registry
 from R1.agent import get_runtime
 
 logger = logging.getLogger("R1:openclaw")

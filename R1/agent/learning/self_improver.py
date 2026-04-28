@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from enum import Enum
+from dataclasses import dataclass
 
 logger = logging.getLogger("R1:self_improver")
 
